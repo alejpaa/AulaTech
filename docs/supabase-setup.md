@@ -37,6 +37,8 @@ insert into public.usuarios (auth_user_id, rol, nombres, apellidos, email)
 values ('AUTH_USER_ID', 'administrativo', 'Admin', 'Principal', 'admin@aula-tech.local');
 ```
 
+Para crear usuarios sin depender de correos de confirmacion revisa `docs/auth-users.md`.
+
 ## Orden recomendado de implementacion
 
 1. Login real con Supabase Auth desde el cliente Supabase.

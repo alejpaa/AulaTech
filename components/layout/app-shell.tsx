@@ -1,9 +1,10 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { roleNavigation } from "@/config/navigation";
 import type { UserProfile } from "@/lib/auth/roles";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils/cn";
+import { LogoutButton } from "@/features/auth/components/logout-button";
+import { MobileNav } from "./mobile-nav";
+import { SidebarNav } from "./sidebar-nav";
 
 type AppShellProps = {
   profile: UserProfile;
@@ -24,19 +25,7 @@ export function AppShell({ profile, children }: AppShellProps) {
           </Badge>
         </div>
 
-        <nav className="mt-8 space-y-1">
-          {navigation.map((item) => (
-            <Link
-              className={cn(
-                "block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950",
-              )}
-              href={item.href}
-              key={item.href}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
+        <SidebarNav items={navigation} />
       </aside>
 
       <div className="lg:pl-72">
@@ -48,9 +37,13 @@ export function AppShell({ profile, children }: AppShellProps) {
                 {profile.nombres} {profile.apellidos}
               </p>
             </div>
-            <p className="text-sm text-slate-500">{profile.email}</p>
+            <div className="flex items-center gap-3">
+              <p className="hidden text-sm text-slate-500 sm:block">{profile.email}</p>
+              <LogoutButton />
+            </div>
           </div>
         </header>
+        <MobileNav items={navigation} />
 
         <main className="px-5 py-6 lg:px-8">{children}</main>
       </div>
