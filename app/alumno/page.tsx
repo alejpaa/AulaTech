@@ -133,7 +133,7 @@ export default async function AlumnoPage() {
                 <>
                   <div className="flex justify-between items-start mb-2">
                     <span className="text-lg font-semibold text-slate-800">{data.upcomingPayment.month}</span>
-                    <StatusBadge status={data.upcomingPayment.status} variant={data.upcomingPayment.status === "VENCIDA" ? "danger" : "default"} />
+                    <StatusBadge status={data.upcomingPayment.status} variant={data.upcomingPayment.status === "VENCIDA" ? "danger" : "neutral"} />
                   </div>
                   <div className="text-4xl font-bold text-red-600 mb-6 tracking-tight">
                     S/ {data.upcomingPayment.amount}
