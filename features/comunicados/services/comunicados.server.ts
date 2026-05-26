@@ -131,4 +131,4 @@ export async function getComunicadosAdminFiltered(filters: AdminComunicadosFilte
 
   return mapComunicados((dbData || []) as ComunicadoRow[]);
 }
-export type { getDashboardAlumno } from "@/features/alumnos/services/dashboard.server";
+
