@@ -4,7 +4,7 @@ import type { ComunicadoItem } from "@/features/comunicados/services/comunicados
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ChevronRight } from "lucide-react";
+import { Calendar, ChevronRight, Users } from "lucide-react";
 
 type ComunicadoCardProps = {
   comunicado: ComunicadoItem;
@@ -12,6 +12,14 @@ type ComunicadoCardProps = {
 };
 
 export function ComunicadoCard({ comunicado, onRead }: ComunicadoCardProps) {
+  const destinatarioLabel = comunicado.destinatario === "profesor"
+    ? "Profesores"
+    : comunicado.destinatario === "alumno"
+      ? "Alumnos"
+      : comunicado.destinatario === "administrativo"
+        ? "Administrativo"
+        : "Todos";
+
   return (
     <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200 w-full group">
       {/* Mitad Superior: Imagen con Zoom Effect y Badge Flotante */}
@@ -40,6 +48,11 @@ export function ComunicadoCard({ comunicado, onRead }: ComunicadoCardProps) {
           <p className="text-[11px] text-slate-400 font-semibold flex items-center gap-1 leading-none">
             <Calendar className="w-3.5 h-3.5" />
             {comunicado.fecha}
+          </p>
+
+          <p className="text-[11px] text-slate-500 font-semibold flex items-center gap-1 leading-none">
+            <Users className="w-3.5 h-3.5" />
+            {destinatarioLabel}
           </p>
 
           {/* Título en Negrita */}

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComunicadoItem } from "@/features/comunicados/services/comunicados.server";
-import { X, Calendar } from "lucide-react";
+import { X, Calendar, Users } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,14 @@ type ComunicadoModalProps = {
 
 export function ComunicadoModal({ comunicado, isOpen, onClose }: ComunicadoModalProps) {
   if (!isOpen || !comunicado) return null;
+
+  const destinatarioLabel = comunicado.destinatario === "profesor"
+    ? "Profesores"
+    : comunicado.destinatario === "alumno"
+      ? "Alumnos"
+      : comunicado.destinatario === "administrativo"
+        ? "Administrativo"
+        : "Todos";
 
   return (
     <div
@@ -57,6 +65,11 @@ export function ComunicadoModal({ comunicado, isOpen, onClose }: ComunicadoModal
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold leading-none">
             <Calendar className="w-3.5 h-3.5" />
             {comunicado.fecha}
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold leading-none">
+            <Users className="w-3.5 h-3.5" />
+            {destinatarioLabel}
           </div>
 
           {/* Título */}

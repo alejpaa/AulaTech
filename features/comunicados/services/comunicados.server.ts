@@ -7,6 +7,7 @@ export type ComunicadoItem = {
   fecha: string;
   tag: "REUNIÓN" | "ACADÉMICO";
   imageUrl: string;
+  destinatario: "administrativo" | "profesor" | "alumno" | null;
 };
 
 const MONTHS = [
@@ -22,29 +23,23 @@ const IMAGES = {
   REUNION_2: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop", // Teamwork
 };
 
-export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
-  const supabase = await createSupabaseServerClient();
+type ComunicadoRow = {
+  id: string;
+  titulo: string;
+  contenido: string;
+  destinatario: "administrativo" | "profesor" | "alumno" | null;
+  created_at: string;
+};
 
-  // 1. Consultar comunicados publicados dirigidos a alumnos o globales (destinatario is null)
-  const { data: dbData, error: dbError } = await supabase
-    .from("comunicados")
-    .select("id, titulo, contenido, created_at")
-    .eq("publicado", true)
-    .or("destinatario.eq.alumno,destinatario.is.null")
-    .order("created_at", { ascending: false });
+export type AdminComunicadosFilters = {
+  titulo?: string;
+  destinatario?: string;
+};
 
-  if (dbError) {
-    console.error("Error fetching announcements from DB:", dbError);
-    return [];
-  }
-
-  const rawComunicados = dbData || [];
-
-  // 2. Mapear, categorizar y asignar portadas visuales
-  return rawComunicados.map((row: any, index: number) => {
+function mapComunicados(rows: ComunicadoRow[]): ComunicadoItem[] {
+  return rows.map((row) => {
     const textToAnalyze = `${row.titulo} ${row.contenido}`.toLowerCase();
 
-    // Categorización inteligente por palabras clave
     const isMeeting =
       textToAnalyze.includes("reunión") ||
       textToAnalyze.includes("reunion") ||
@@ -55,11 +50,8 @@ export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
       textToAnalyze.includes("convocatoria");
 
     const tag = isMeeting ? "REUNIÓN" : "ACADÉMICO";
-
-    // Usar la imagen de los libros para todos los comunicados por consistencia visual
     const imageUrl = IMAGES.ACADEMICO_2;
 
-    // Formateo de fecha
     const date = new Date(row.created_at);
     const day = date.getDate();
     const monthName = MONTHS[date.getMonth()] || "";
@@ -70,10 +62,73 @@ export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
       id: row.id,
       titulo: row.titulo,
       contenido: row.contenido,
+      destinatario: row.destinatario,
       fecha,
       tag,
       imageUrl,
     };
   });
 }
-export type { getDashboardAlumno } from "@/features/alumnos/services/dashboard.server";
+
+export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: dbData, error: dbError } = await supabase
+    .from("comunicados")
+    .select("id, titulo, contenido, destinatario, created_at")
+    .eq("publicado", true)
+    .or("destinatario.eq.alumno,destinatario.is.null")
+    .order("created_at", { ascending: false });
+
+  if (dbError) {
+    console.error("Error fetching announcements from DB:", dbError);
+    return [];
+  }
+
+  return mapComunicados((dbData || []) as ComunicadoRow[]);
+}
+
+export async function getComunicadosAdmin(): Promise<ComunicadoItem[]> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: dbData, error: dbError } = await supabase
+    .from("comunicados")
+    .select("id, titulo, contenido, destinatario, created_at")
+    .order("created_at", { ascending: false });
+
+  if (dbError) {
+    console.error("Error fetching admin announcements from DB:", dbError);
+    return [];
+  }
+
+  return mapComunicados((dbData || []) as ComunicadoRow[]);
+}
+
+export async function getComunicadosAdminFiltered(filters: AdminComunicadosFilters): Promise<ComunicadoItem[]> {
+  const supabase = await createSupabaseServerClient();
+  const titulo = filters.titulo?.trim() ?? "";
+  const destinatario = filters.destinatario?.trim() ?? "todos";
+
+  let query = supabase
+    .from("comunicados")
+    .select("id, titulo, contenido, destinatario, created_at")
+    .order("created_at", { ascending: false });
+
+  if (titulo) {
+    query = query.ilike("titulo", `%${titulo}%`);
+  }
+
+  if (destinatario && destinatario !== "todos") {
+    query = query.eq("destinatario", destinatario);
+  }
+
+  const { data: dbData, error: dbError } = await query;
+
+  if (dbError) {
+    console.error("Error fetching admin announcements from DB:", dbError);
+    return [];
+  }
+
+  return mapComunicados((dbData || []) as ComunicadoRow[]);
+}
+
