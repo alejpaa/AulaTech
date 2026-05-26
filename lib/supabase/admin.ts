@@ -276,3 +276,18 @@ export async function getAdminPagos(): Promise<AdminPagoItem[]> {
     };
   });
 }
+
+export async function getAdminCursos(): Promise<SimpleMapRow[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("cursos")
+    .select("id, nombre")
+    .order("nombre", { ascending: true });
+
+  if (error) {
+    console.error("Error loading admin cursos:", error);
+    return [];
+  }
+
+  return (data ?? []) as SimpleMapRow[];
+}

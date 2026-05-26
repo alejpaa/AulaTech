@@ -11,9 +11,11 @@ import { requireRole } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { RecordModal, type RecordActionState } from "@/components/layout/record-modal";
+import { CreateSalonForm } from "@/components/forms/create-salon-form";
+import { SalonFilter } from "@/components/forms/salon-filter";
 
 type PageProps = {
-  searchParams?: Promise<{ nombre?: string; grado?: string; seccion?: string }>;
+  searchParams?: Promise<{ nivel?: string; grado?: string; seccion?: string }>;
 };
 
 async function createSalon(_: RecordActionState, formData: FormData): Promise<RecordActionState> {
@@ -51,15 +53,16 @@ async function createSalon(_: RecordActionState, formData: FormData): Promise<Re
 export default async function AdminSalonesPage({ searchParams }: PageProps) {
   await requireRole(["administrativo"]);
   const params = (await searchParams) ?? {};
-  const nombre = params.nombre?.trim().toLowerCase() ?? "";
+  const nivel = params.nivel?.trim().toLowerCase() ?? "";
   const grado = params.grado?.trim().toLowerCase() ?? "";
   const seccion = params.seccion?.trim().toLowerCase() ?? "";
+  
   const salones = await getAdminSalones();
   const filtered = salones.filter((salon) => {
-    const matchesNombre = !nombre || salon.nombre.toLowerCase().includes(nombre);
+    const matchesNivel = !nivel || salon.nivel?.toLowerCase().includes(nivel);
     const matchesGrado = !grado || salon.grado.toLowerCase().includes(grado);
     const matchesSeccion = !seccion || salon.seccion.toLowerCase().includes(seccion);
-    return matchesNombre && matchesGrado && matchesSeccion;
+    return matchesNivel && matchesGrado && matchesSeccion;
   });
 
   return (
@@ -69,37 +72,16 @@ export default async function AdminSalonesPage({ searchParams }: PageProps) {
         description="Registro y edicion de grados, secciones y niveles."
         actions={
           <RecordModal
-            triggerLabel="Registrar salon"
-            title="Nuevo salon"
-            submitLabel="Guardar salon"
+            triggerLabel="Registrar salón"
+            title="Nuevo Salón"
+            submitLabel="Guardar Salón"
             action={createSalon}
           >
-            <div className="space-y-2"><Label htmlFor="nombre-salon">Nombre</Label><Input id="nombre-salon" name="nombre" placeholder="1ro A Primaria" /></div>
-            <div className="space-y-2"><Label htmlFor="grado-salon">Grado</Label><Input id="grado-salon" name="grado" placeholder="1ro" /></div>
-            <div className="space-y-2"><Label htmlFor="seccion-salon">Seccion</Label><Input id="seccion-salon" name="seccion" placeholder="A" /></div>
-            <div className="space-y-2"><Label htmlFor="nivel-salon">Nivel</Label><Input id="nivel-salon" name="nivel" placeholder="Primaria" /></div>
+            <CreateSalonForm />
           </RecordModal>
         }
       />
-      <form method="GET">
-        <FilterPanel>
-          <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre</Label>
-            <Input defaultValue={params.nombre ?? ""} id="nombre" name="nombre" placeholder="1ro A Primaria" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="grado">Grado</Label>
-            <Input defaultValue={params.grado ?? ""} id="grado" name="grado" placeholder="1ro" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="seccion">Seccion</Label>
-            <Input defaultValue={params.seccion ?? ""} id="seccion" name="seccion" placeholder="A" />
-          </div>
-          <div className="flex items-end">
-            <Button className="w-full" variant="secondary" type="submit">Buscar</Button>
-          </div>
-        </FilterPanel>
-      </form>
+      <SalonFilter />
       {filtered.length > 0 ? (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <Table>

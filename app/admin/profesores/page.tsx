@@ -6,14 +6,14 @@ import { EmptyState } from "@/components/layout/empty-state";
 import { FilterPanel } from "@/components/layout/filter-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getAdminProfesores, getNextSequentialCode } from "@/lib/supabase/admin";
+import { getAdminProfesores, getNextSequentialCode, getAdminCursos } from "@/lib/supabase/admin";
 import { requireRole } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { RecordModal, type RecordActionState } from "@/components/layout/record-modal";
 
 type PageProps = {
-  searchParams?: Promise<{ apellidos?: string; nombres?: string; especialidad?: string }>;
+  searchParams?: Promise<{ apellidos?: string; nombres?: string; dni?: string; especialidad?: string }>;
 };
 
 async function createProfesor(_: RecordActionState, formData: FormData): Promise<RecordActionState> {
@@ -55,13 +55,15 @@ export default async function AdminProfesoresPage({ searchParams }: PageProps) {
   const params = (await searchParams) ?? {};
   const apellidos = params.apellidos?.trim().toLowerCase() ?? "";
   const nombres = params.nombres?.trim().toLowerCase() ?? "";
+  const dni = params.dni?.trim().toLowerCase() ?? "";
   const especialidad = params.especialidad?.trim().toLowerCase() ?? "";
-  const profesores = await getAdminProfesores();
+  const [profesores, cursos] = await Promise.all([getAdminProfesores(), getAdminCursos()]);
   const filtered = profesores.filter((profesor) => {
     const matchesApellidos = !apellidos || profesor.apellidos.toLowerCase().includes(apellidos);
     const matchesNombres = !nombres || profesor.nombres.toLowerCase().includes(nombres);
+    const matchesDni = !dni || (profesor.dni ?? "").toLowerCase().includes(dni);
     const matchesEspecialidad = !especialidad || (profesor.especialidad ?? "").toLowerCase().includes(especialidad);
-    return matchesApellidos && matchesNombres && matchesEspecialidad;
+    return matchesApellidos && matchesNombres && matchesDni && matchesEspecialidad;
   });
 
   return (
@@ -79,7 +81,17 @@ export default async function AdminProfesoresPage({ searchParams }: PageProps) {
             <div className="space-y-2"><Label htmlFor="prof-nombres">Nombres</Label><Input id="prof-nombres" name="nombres" placeholder="Nombre(s)" /></div>
             <div className="space-y-2"><Label htmlFor="prof-apellidos">Apellidos</Label><Input id="prof-apellidos" name="apellidos" placeholder="Apellido(s)" /></div>
             <div className="space-y-2"><Label htmlFor="prof-dni">DNI</Label><Input id="prof-dni" name="dni" placeholder="00000000" /></div>
-            <div className="space-y-2"><Label htmlFor="prof-especialidad">Especialidad</Label><Input id="prof-especialidad" name="especialidad" placeholder="Matematica, Comunicacion..." /></div>
+            <div className="space-y-2">
+              <Label htmlFor="prof-especialidad">Especialidad (Curso)</Label>
+              <select id="prof-especialidad" name="especialidad" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm">
+                <option value="">Selecciona un curso</option>
+                {cursos.map((c) => (
+                  <option key={c.id} value={String(c.nombre ?? "")}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
           </RecordModal>
         }
       />
@@ -94,8 +106,19 @@ export default async function AdminProfesoresPage({ searchParams }: PageProps) {
             <Input defaultValue={params.nombres ?? ""} id="nombres" name="nombres" placeholder="Buscar por nombres" />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="dni">DNI</Label>
+            <Input defaultValue={params.dni ?? ""} id="dni" name="dni" placeholder="Buscar por DNI" />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="especialidad">Especialidad</Label>
-            <Input defaultValue={params.especialidad ?? ""} id="especialidad" name="especialidad" placeholder="Matematica, Comunicacion..." />
+            <select defaultValue={params.especialidad ?? ""} id="especialidad" name="especialidad" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm">
+              <option value="">Todos</option>
+              {cursos.map((c) => (
+                <option key={c.id} value={String(c.nombre ?? "")}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex items-end">
             <Button className="w-full" variant="secondary" type="submit">Buscar</Button>

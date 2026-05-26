@@ -2,19 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { EmptyState } from "@/components/layout/empty-state";
 import { FilterPanel } from "@/components/layout/filter-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getAdminAlumnos, getAdminSalones, getNextSequentialCode } from "@/lib/supabase/admin";
+import { getAdminAlumnos, getNextSequentialCode } from "@/lib/supabase/admin";
 import { requireRole } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { RecordModal, type RecordActionState } from "@/components/layout/record-modal";
+import { CreateAlumnoForm } from "@/components/forms/create-alumno-form";
+import { AlumnosFilter } from "@/components/forms/alumnos-filter";
 
 type PageProps = {
-  searchParams?: Promise<{ apellidos?: string; nombres?: string; grado?: string }>;
+  searchParams?: Promise<{ apellidos?: string; nombres?: string; dni?: string; nivel?: string; grado?: string; seccion?: string }>;
 };
 
 async function createAlumno(_: RecordActionState, formData: FormData): Promise<RecordActionState> {
@@ -58,13 +59,20 @@ export default async function AdminAlumnosPage({ searchParams }: PageProps) {
   const params = (await searchParams) ?? {};
   const apellidos = params.apellidos?.trim().toLowerCase() ?? "";
   const nombres = params.nombres?.trim().toLowerCase() ?? "";
+  const dni = params.dni?.trim().toLowerCase() ?? "";
+  const nivel = params.nivel?.trim().toLowerCase() ?? "";
   const grado = params.grado?.trim().toLowerCase() ?? "";
-  const [alumnos, salones] = await Promise.all([getAdminAlumnos(), getAdminSalones()]);
+  const seccion = params.seccion?.trim().toLowerCase() ?? "";
+  
+  const alumnos = await getAdminAlumnos();
   const filtered = alumnos.filter((alumno) => {
     const matchesApellidos = !apellidos || alumno.apellidos.toLowerCase().includes(apellidos);
     const matchesNombres = !nombres || alumno.nombres.toLowerCase().includes(nombres);
-    const matchesGrado = !grado || (alumno.salon_grado ?? "").toLowerCase().includes(grado);
-    return matchesApellidos && matchesNombres && matchesGrado;
+    const matchesDni = !dni || (alumno.dni?.toLowerCase().includes(dni) ?? false);
+    const matchesNivel = !nivel || (alumno.salon_nivel?.toLowerCase().includes(nivel) ?? false);
+    const matchesGrado = !grado || (alumno.salon_grado?.toLowerCase().includes(grado) ?? false);
+    const matchesSeccion = !seccion || (alumno.salon_seccion?.toLowerCase().includes(seccion) ?? false);
+    return matchesApellidos && matchesNombres && matchesDni && matchesNivel && matchesGrado && matchesSeccion;
   });
 
   return (
@@ -79,40 +87,11 @@ export default async function AdminAlumnosPage({ searchParams }: PageProps) {
             submitLabel="Guardar alumno"
             action={createAlumno}
           >
-            <div className="space-y-2"><Label htmlFor="alu-nombres">Nombres</Label><Input id="alu-nombres" name="nombres" placeholder="Nombre(s)" /></div>
-            <div className="space-y-2"><Label htmlFor="alu-apellidos">Apellidos</Label><Input id="alu-apellidos" name="apellidos" placeholder="Apellido(s)" /></div>
-            <div className="space-y-2"><Label htmlFor="alu-dni">DNI</Label><Input id="alu-dni" name="dni" placeholder="00000000" /></div>
-            <div className="space-y-2"><Label htmlFor="alu-fecha">Fecha de nacimiento</Label><Input id="alu-fecha" name="fecha_nacimiento" type="date" /></div>
-            <div className="space-y-2"><Label htmlFor="alu-salon">Salon</Label><Select id="alu-salon" name="salon_id" defaultValue=""><option value="">Sin salon</option>{salones.map((salon) => <option key={salon.id} value={salon.id}>{salon.nombre}</option>)}</Select></div>
+            <CreateAlumnoForm />
           </RecordModal>
         }
       />
-      <form method="GET">
-        <FilterPanel>
-          <div className="space-y-2">
-            <Label htmlFor="apellidos">Apellidos</Label>
-            <Input defaultValue={params.apellidos ?? ""} id="apellidos" name="apellidos" placeholder="Buscar por apellidos" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="nombres">Nombres</Label>
-            <Input defaultValue={params.nombres ?? ""} id="nombres" name="nombres" placeholder="Buscar por nombres" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="grado">Grado</Label>
-            <Select defaultValue={params.grado ?? ""} id="grado" name="grado">
-              <option value="">Todos</option>
-              <option value="1ro">1ro</option>
-              <option value="2do">2do</option>
-              <option value="3ro">3ro</option>
-              <option value="4to">4to</option>
-              <option value="5to">5to</option>
-            </Select>
-          </div>
-          <div className="flex items-end">
-            <Button className="w-full" variant="secondary" type="submit">Buscar</Button>
-          </div>
-        </FilterPanel>
-      </form>
+      <AlumnosFilter />
       {filtered.length > 0 ? (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <Table>
