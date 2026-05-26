@@ -1,10 +1,10 @@
-# 🏫 Aula Tech
+# Aula Tech
 
 Plataforma de aula virtual diseñada para colegios en Perú. Optimiza el aprendizaje y el control administrativo integrando gestión de notas, asistencia, pagos y comunicación docente-alumno, eliminando la dependencia de documentos físicos.
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 | Capa | Tecnología |
 |---|---|
@@ -17,7 +17,7 @@ Plataforma de aula virtual diseñada para colegios en Perú. Optimiza el aprendi
 
 ---
 
-## 📦 Módulos del sistema
+## Módulos del sistema
 
 - **Aula Virtual** — comunicación alumno-docente y publicación de comunicados
 - **Notas** — registro, cálculo de promedios y semáforo de alerta temprana
@@ -28,7 +28,7 @@ Plataforma de aula virtual diseñada para colegios en Perú. Optimiza el aprendi
 
 ---
 
-## 🗂️ Estructura del repositorio
+## Estructura del repositorio
 
 ```
 /
@@ -51,7 +51,7 @@ Plataforma de aula virtual diseñada para colegios en Perú. Optimiza el aprendi
 
 ---
 
-## ⚙️ Configuración local
+## Configuración local
 
 ### Prerrequisitos
 
@@ -111,7 +111,7 @@ cd frontend && npm run dev
 
 ---
 
-## 🌐 Deploy en Vercel
+## Deploy en Vercel
 
 El frontend se despliega automáticamente en **Vercel** al hacer merge a `main`.
 
@@ -126,7 +126,7 @@ El backend puede desplegarse en Railway, Render, o como Serverless Functions en 
 
 ---
 
-## 🔀 Flujo de ramas (Git Flow)
+## Flujo de ramas (Git Flow)
 
 ```
 main          ← producción estable (solo merge desde release/*)
@@ -155,7 +155,7 @@ Un PR solo puede mergearse si el pipeline está en **verde ✅**.
 
 ---
 
-## 📋 Gestión de cambios
+## Gestión de cambios
 
 Los cambios se registran como **GitHub Issues** con la etiqueta `change-request` (SCR). El flujo es:
 
@@ -168,7 +168,7 @@ Los cambios se registran como **GitHub Issues** con la etiqueta `change-request`
 
 ---
 
-## 🗄️ Base de datos (Supabase)
+## Base de datos (Supabase)
 
 Las tablas principales en Supabase son: `usuarios`, `salones`, `notas`, `asistencia`, `pagos` y `comunicados`.
 
@@ -176,7 +176,7 @@ Las migraciones se versionan en `/db/migrations/` con el formato `YYYYMMDD_descr
 
 ---
 
-## 🔐 Seguridad
+## Seguridad
 
 - Datos personales de alumnos cifrados en reposo y en tránsito (cumplimiento Ley N° 29733)
 - Autenticación con JWT; refresh tokens almacenados de forma segura
@@ -185,7 +185,7 @@ Las migraciones se versionan en `/db/migrations/` con el formato `YYYYMMDD_descr
 
 ---
 
-## 📅 Estado del proyecto
+## Estado del proyecto
 
 | Fase | Estado |
 |---|---|
@@ -200,7 +200,7 @@ Las migraciones se versionan en `/db/migrations/` con el formato `YYYYMMDD_descr
 
 ---
 
-## 👥 Equipo
+## Equipo
 
 Proyecto desarrollado por **Equipo Aula Tech** — Grupo 7
 
