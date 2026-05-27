@@ -142,7 +142,7 @@ hotfix/*      ← correcciones urgentes en producción
 
 ---
 
-## 🧪 Tests y CI/CD
+## Tests y CI/CD
 
 El pipeline de GitHub Actions se ejecuta en cada Pull Request hacia `develop` y cubre:
 
@@ -208,6 +208,6 @@ Gestión de configuración a cargo del **SCMR Aula Tech**
 
 ---
 
-## 📄 Licencia
+## Licencia
 
-Uso interno académico — Aula Tech © 2025
+Uso interno académico — Aula Tech © 2026
