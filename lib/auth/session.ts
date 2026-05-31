@@ -24,6 +24,12 @@ export async function getCurrentProfile(): Promise<UserProfile | null> {
     return null;
   }
 
+  console.log("📍 PADRE LOGUEADO:", {
+    id: data.id,
+    auth_user_id: data.auth_user_id,
+    rol: data.rol,
+    email: data.email,
+  });
   return data as UserProfile;
 }
 

@@ -1,4 +1,4 @@
-export const appRoles = ["administrativo", "profesor", "alumno"] as const;
+export const appRoles = ["administrativo", "profesor", "alumno", "padre"] as const;
 
 export type AppRole = (typeof appRoles)[number];
 
@@ -21,6 +21,7 @@ export function roleHomePath(role: AppRole) {
     administrativo: "/admin",
     profesor: "/profesor",
     alumno: "/alumno",
+    padre: "/padre",
   };
 
   return paths[role];
