@@ -298,6 +298,9 @@ alter table public.pagos enable row level security;
 alter table public.comunicados enable row level security;
 alter table public.auditoria enable row level security;
 
+create policy "usuarios_update_self" on public.usuarios for update using (id = public.current_usuario_id());
+create policy "profesores_update_self" on public.profesores for update using (usuario_id = public.current_usuario_id());
+
 create policy "usuarios_select_self_or_admin" on public.usuarios for select using (public.is_admin() or id = public.current_usuario_id());
 create policy "usuarios_admin_all" on public.usuarios for all using (public.is_admin()) with check (public.is_admin());
 

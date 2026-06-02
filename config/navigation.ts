@@ -18,6 +18,7 @@ export const roleNavigation: Record<AppRole, NavigationItem[]> = {
     { title: "Pagos", href: "/admin/pagos", description: "Estados mensuales", icon: "CreditCard" },
   ],
   profesor: [
+    { title: "Dashboard", href: "/profesor", description: "Resumen ejecutivo", icon: "LayoutDashboard" },
     { title: "Comunicados", href: "/profesor/comunicados", description: "Avisos publicados", icon: "Megaphone" },
     { title: "Alumnos", href: "/profesor/alumnos", description: "Alumnos asignados", icon: "Users" },
     { title: "Asistencia", href: "/profesor/asistencia", description: "Registro semanal", icon: "CalendarCheck" },
