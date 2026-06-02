@@ -88,6 +88,24 @@ export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
   return mapComunicados((dbData || []) as ComunicadoRow[]);
 }
 
+export async function getComunicadosProfesor(): Promise<ComunicadoItem[]> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: dbData, error: dbError } = await supabase
+    .from("comunicados")
+    .select("id, titulo, contenido, destinatario, created_at")
+    .eq("publicado", true)
+    .or("destinatario.eq.profesor,destinatario.is.null")
+    .order("created_at", { ascending: false });
+
+  if (dbError) {
+    console.error("Error fetching announcements from DB:", dbError);
+    return [];
+  }
+
+  return mapComunicados((dbData || []) as ComunicadoRow[]);
+}
+
 export async function getComunicadosAdmin(): Promise<ComunicadoItem[]> {
   const supabase = await createSupabaseServerClient();
 
