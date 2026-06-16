@@ -34,14 +34,17 @@ export async function getMiPerfil(usuarioId: string): Promise<StudentProfileData
       apellidos,
       dni,
       fecha_nacimiento,
-      usuarios(email, telefono),
+      usuarios:usuarios!alumnos_usuario_id_fkey(email, telefono),
       salones(nombre, grado, seccion, nivel)
     `)
     .eq("usuario_id", usuarioId)
     .single();
 
-  if (alumnoError || !alumnoData) {
+  if (alumnoError && alumnoError.code !== "PGRST116") {
     console.error("Error fetching student profile:", alumnoError);
+  }
+
+  if (alumnoError || !alumnoData) {
     return null;
   }
 

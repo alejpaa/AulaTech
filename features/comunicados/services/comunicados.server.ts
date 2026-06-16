@@ -7,7 +7,7 @@ export type ComunicadoItem = {
   fecha: string;
   tag: "REUNIÓN" | "ACADÉMICO";
   imageUrl: string;
-  destinatario: "administrativo" | "profesor" | "alumno" | null;
+  destinatario: "administrativo" | "profesor" | "alumno" | "padre" | null; 
 };
 
 const MONTHS = [
@@ -27,7 +27,7 @@ type ComunicadoRow = {
   id: string;
   titulo: string;
   contenido: string;
-  destinatario: "administrativo" | "profesor" | "alumno" | null;
+  destinatario: "administrativo" | "profesor" | "alumno" | "padre" | null; 
   created_at: string;
 };
 
@@ -78,6 +78,24 @@ export async function getComunicadosAlumno(): Promise<ComunicadoItem[]> {
     .select("id, titulo, contenido, destinatario, created_at")
     .eq("publicado", true)
     .or("destinatario.eq.alumno,destinatario.is.null")
+    .order("created_at", { ascending: false });
+
+  if (dbError) {
+    console.error("Error fetching announcements from DB:", dbError);
+    return [];
+  }
+
+  return mapComunicados((dbData || []) as ComunicadoRow[]);
+}
+
+export async function getComunicadosProfesor(): Promise<ComunicadoItem[]> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: dbData, error: dbError } = await supabase
+    .from("comunicados")
+    .select("id, titulo, contenido, destinatario, created_at")
+    .eq("publicado", true)
+    .or("destinatario.eq.profesor,destinatario.is.null")
     .order("created_at", { ascending: false });
 
   if (dbError) {
