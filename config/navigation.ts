@@ -33,4 +33,11 @@ export const roleNavigation: Record<AppRole, NavigationItem[]> = {
     { title: "Pagos", href: "/alumno/pagos", description: "Estado mensual", icon: "CreditCard" },
     { title: "Perfil", href: "/alumno/perfil", description: "Datos personales", icon: "User" },
   ],
+  padre: [
+    { title: "Dashboard", href: "/padre", description: "Resumen de tu hijo", icon: "LayoutDashboard" },
+    { title: "Comunicados", href: "/padre/comunicados", description: "Avisos para tu hijo", icon: "Megaphone" },
+    { title: "Notas", href: "/padre/notas", description: "Calificaciones del hijo", icon: "ClipboardList" },
+    { title: "Asistencia", href: "/padre/asistencia", description: "Historial de asistencia", icon: "CalendarCheck" },
+    { title: "Pagos", href: "/padre/pagos", description: "Estado de pagos", icon: "CreditCard" },
+  ],
 };
