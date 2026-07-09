@@ -39,7 +39,7 @@ export function SidebarNav({ items }: SidebarNavProps) {
   return (
     <nav className="mt-8 space-y-1">
       {items.map((item) => {
-        const active = pathname === item.href || (item.href !== "/alumno" && item.href !== "/profesor" && item.href !== "/admin" && pathname.startsWith(`${item.href}/`));
+        const active = pathname === item.href || (item.href !== "/alumno" && item.href !== "/profesor" && item.href !== "/admin" && item.href !== "/padre" && pathname.startsWith(`${item.href}/`));
         const Icon = iconMap[item.icon];
 
         return (
