@@ -15,7 +15,7 @@ export function MobileNav({ items }: MobileNavProps) {
   return (
     <nav className="flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-5 py-3 lg:hidden">
       {items.map((item) => {
-        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const active = pathname === item.href || (!["/alumno", "/profesor", "/admin", "/padre"].includes(item.href) && pathname.startsWith(`${item.href}/`));
 
         return (
           <Link
